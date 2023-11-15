@@ -1,2 +1,2 @@
-# funbgcex-colab
+# Google Colaboratory version of FunBGCeX
  
