@@ -357,12 +357,12 @@ def BGCeXtractor(gbk_dir,results_dir,mode,query,gap_allowed,max_bgc_gap,min_prot
             print("The given input file does not contain any protein sequence.")
             continue
 
-        csv_dir = f"{output_dir}/CSVs"
-        os.makedirs(csv_dir,exist_ok=True)
-        analysis_csv = f"{csv_dir}/{file_name}_analysis.csv"
-        analysis_csv2 = f"{csv_dir}/{file_name}_analysis_modified.csv"
-        df.to_csv(analysis_csv)
-        df_.to_csv(analysis_csv2)
+        # csv_dir = f"{output_dir}/CSVs"
+        # os.makedirs(csv_dir,exist_ok=True)
+        # analysis_csv = f"{csv_dir}/{file_name}_analysis.csv"
+        # analysis_csv2 = f"{csv_dir}/{file_name}_analysis_modified.csv"
+        # df.to_csv(analysis_csv)
+        # df_.to_csv(analysis_csv2)
 
         BGCdf = pd.read_csv(cluster_csv)
         BGCnum = len(BGCdf)
