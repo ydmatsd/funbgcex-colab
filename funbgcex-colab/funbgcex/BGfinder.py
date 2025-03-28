@@ -677,7 +677,7 @@ def DefineBoundary(mode,GBK_dir,BGC_dir,gap_allowed,min_prot_len,fungus_name,df,
                             "Number of genes","Core enzymes","Similar BGC","Similarity score","Metabolite from similar BGC","Pfam domains"]
 
 
-                # BGCdf_ = pd.DataFrame(BGC_list,columns=columns)
+                BGCdf_ = pd.DataFrame(BGC_list,columns=columns)
                 # BGCdf = pd.concat([BGCdf,BGCdf_])
                 if BGCdf.empty:
                     BGCdf = BGCdf_.copy()
