@@ -686,6 +686,7 @@ def DefineBoundary(mode,GBK_dir,BGC_dir,gap_allowed,min_prot_len,fungus_name,df,
 
                 allBGCdf_ = pd.DataFrame(BGC_list_,columns=columns_)
                 allBGCdf = pd.concat([allBGCdf,allBGCdf_])
+                
 
                 BGC_num += 1
     
