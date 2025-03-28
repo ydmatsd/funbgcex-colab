@@ -683,10 +683,12 @@ def DefineBoundary(mode,GBK_dir,BGC_dir,gap_allowed,min_prot_len,fungus_name,df,
                     BGCdf = BGCdf_.copy()
                 else:
                     BGCdf = pd.concat([BGCdf,BGCdf_])
-
-                allBGCdf_ = pd.DataFrame(BGC_list_,columns=columns_)
-                allBGCdf = pd.concat([allBGCdf,allBGCdf_])
                 
+                allBGCdf_ = pd.DataFrame(BGC_list_,columns=columns_)
+                if allBGCdf.empty:
+                    allBGCdf = allBGCdf_.copy()
+                else:
+                    allBGCdf = pd.concat([allBGCdf,allBGCdf_])
 
                 BGC_num += 1
     
