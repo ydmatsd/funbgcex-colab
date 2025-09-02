@@ -48,6 +48,7 @@ def ClusteredProteinFinder(fasta_dir,database,IDdict,deletedProtDict,max_bgc_gap
 						prot_list.append(protName)
 						link_list.append([protName,[],[]])
 
+		# df = pd.DataFrame(columns=prot_list,index=prot_list).fillna(0)
 		df = pd.DataFrame(0, columns=prot_list, index=prot_list)
 
 		"""
@@ -194,7 +195,7 @@ def ClusteredProteinFinder(fasta_dir,database,IDdict,deletedProtDict,max_bgc_gap
 	analysis_df["clustered"] = 0
 
 	for i in range(len(analysis_df)):
-		if analysis_df.at[i,"locus_tag"] in clusteredProtList and analysis_df.at[i,"housekeeping"] == 0:
+		if analysis_df.at[i,"locus_tag"] in clusteredProtList:
 			analysis_df.at[i,"clustered"] = 1
 			analysis_df.at[i,"BP"] = 1
 
@@ -314,7 +315,7 @@ class SimilarBGCfinder:
 			for item in BGCscoreList:
 				if item[1] == maxScore:
 					self.similarBGC = item[0]
-					self.simlarity_score = round(item[1],1)
+					self.simlarity_score = "{:.1f}".format(item[1])
 					self.metabolite = MetabDict[item[0]]
 
 		else:
