@@ -17,7 +17,14 @@ from Bio import SearchIO
 from Bio.Blast import NCBIXML
 from Bio.SeqFeature import SeqFeature, FeatureLocation
 import numpy as np
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["TF_NUM_INTRAOP_THREADS"] = "1"
+os.environ["TF_NUM_INTEROP_THREADS"] = "1"
+import tensorflow as tf
+tf.config.threading.set_intra_op_parallelism_threads(1)
+tf.config.threading.set_inter_op_parallelism_threads(1)
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 import re
@@ -292,7 +299,7 @@ def ExtractCDS4Check(mode,num_of_genes_checked,output_dir,df):
                 fa.write(df.at[i,"sequence"]+"\n")
 
 
-def AddPfam(hmmscan_result,df,SMhmm):
+def AddPfam(mode,hmmscan_result,df,SMhmm):
     pfamLength = {} #Make a dictiory that contains the name and length of each Pfam entry
     addDict = False
     with open(SMhmm,"r") as h:
@@ -395,6 +402,16 @@ def AddPfam(hmmscan_result,df,SMhmm):
         pfam = ", ".join(sublist)
         df.loc[df["locus_tag"] == item[0], "Pfam"] = pfam
         df.loc[df["locus_tag"] == item[0], "BP"] = 1
+
+    #E-value in hmmscan analysis can vary depending on the number of HMM profiles used. Even if Pfam domains are detected in earlier analyses, if no Pfam domain is detected in this round of analysis, the previous results are overwritten.
+    for i in range(len(df)):
+        if df.at[i,"Pfam"] == "none":
+            if mode == "pfam" and df.at[i,"withTarget"] == 1:
+                df.at[i,"BP"] = 0
+                df.at[i,"withTarget"] = 0
+            if df.at[i,"core"] != "none" and df.at[i,"core"] != "RiPP PP":
+                df.at[i,"core"] = "none"
+
 
 
 def AddHomologue(blastp_result,df):
@@ -876,10 +893,10 @@ def DefineBoundary(mode,GBK_dir,BGC_dir,gap_allowed,min_prot_len,fungus_name,df,
 
                 logger.debug(f"BGC{BGC_num} extracted. Scaffold: {scaffold}; Locus tag start: {locus_tag_start}; Locus tag end: {locus_tag_end}; Start: {start_pos}; End: {end_pos}.")
 
-                preference = {"PKS-NRPS":1,"NRPS-PKS":2,"NR-PKS":3,"PR-PKS":4,"HR-PKS":5,"T3PKS":6,"NRPS":7,"chimeric TS":8,"TC (Class1)":9,
-                "TC (SHC/OSC)":10,"TC (Tri5)":11,"TC (Pyr4)":12,"TC (UbiA)":13,"TC (PbcA)":14,"TC (AstC)":15,"TC (ABA3)":16,
-                "TC (AsR6)":17,"TC (SalTPS)":18,"TC (VniA)":19,"TC (TriDTC)":20,"PT (UbiA)":21,"PT (PaxC)":22,"PT (DMATS)":23,"PT (CosA)":24,"PPPS":25,
-                "RiPP PP":26,"RCDPS":27,"CDPS (SacE)":28,"ICS":29,"PEPM":30,"NRPS-like":31,"PKS-like":32,"ePLS":33}
+                preference = {"PKS-NRPS":1,"NRPS-PKS":2,"NR-PKS":3,"PR-PKS":4,"nPR-PKS":5,"HR-PKS":6,"T3PKS":7,"NRPS":8,"chimeric TS":9,"TC (Class1)":10,
+                "TC (SHC/OSC)":11,"TC (Tri5)":12,"TC (Pyr4)":13,"TC (UbiA)":14,"TC (PbcA)":15,"TC (AstC)":16,"TC (ABA3)":17,
+                "TC (AsR6)":18,"TC (SalTPS)":19,"TC (VniA)":20,"TC (TriDTC)":21,"PT (UbiA)":22,"PT (PaxC)":23,"PT (DMATS)":24,"PT (CosA)":25,"PPPS":26,
+                "RiPP PP":27,"RCDPS":28,"CDPS (SacE)":29,"ICS":30,"PEPM":31,"NRPS-like":32,"PKS-like":33,"ePLS":34}
 
                 core_list_sorted = sorted(core_list, key=lambda x: preference[x])
                 core_enz = ", ".join(core_list_sorted)
